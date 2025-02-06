@@ -1,20 +1,20 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import FolderItem from "./components/FolderItem";
-import { useFolders } from "./hooks/useTodos";
+import { useState } from "react";
+import Sidebar from "./Sidebar";
+import TodoList from "./TodoList";
+import Navbar from "../Navbar/Navbar";
 
 export default function Todo() {
-  const { data: folders, isLoading } = useFolders();
-
-  if (isLoading) return <div>Loading...</div>;
+  const [selectedFolder, setSelectedFolder] = useState("Today");
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Todo List</h1>
-      {folders.map((folder) => (
-        <FolderItem key={folder.id} folder={folder} />
-      ))}
-    </div>
+    <>
+      <Navbar />
+      <div className="h-screen flex">
+        <Sidebar onSelectFolder={setSelectedFolder} />
+        <div className="flex-1">
+          <TodoList folder={selectedFolder} />
+        </div>
+      </div>
+    </>
   );
 }
