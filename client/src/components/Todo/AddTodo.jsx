@@ -12,7 +12,7 @@ export default function AddTodo({ open, handleClose, handleAddTodo }) {
   const [newTodo, setNewTodo] = useState({
     title: "",
     description: "",
-    deadline: "", // Keep as a string for datetime-local format
+    deadline: "",
   });
 
   const handleInputChange = (e) => {

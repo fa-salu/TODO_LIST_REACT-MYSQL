@@ -12,6 +12,7 @@ export const getTasksByFolder = async (folderId) => {
   const [rows] = await pool.query("SELECT * FROM tasks WHERE folder_id = ?", [
     folderId,
   ]);
+  console.log("row", rows);
   return rows;
 };
 
@@ -28,7 +29,13 @@ export const createFolder = async (folderName) => {
 
 export const getFolders = async () => {
   const [rows] = await pool.query(
-    "SELECT * FROM folders ORDER BY created_at DESC"
+    "SELECT * FROM folders ORDER BY created_at ASC"
   );
   return rows;
+};
+
+export const deleteFolder = async (folderId) => {
+  await pool.query("DELETE FROM tasks WHERE folder_id = ?", [folderId]);
+
+  await pool.query("DELETE FROM folders WHERE id = ?", [folderId]);
 };

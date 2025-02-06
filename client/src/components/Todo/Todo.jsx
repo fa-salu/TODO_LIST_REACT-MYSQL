@@ -4,15 +4,18 @@ import TodoList from "./TodoList";
 import Navbar from "../Navbar/Navbar";
 
 export default function Todo() {
-  const [selectedFolder, setSelectedFolder] = useState("Today");
+  const [selectedFolder, setSelectedFolder] = useState({ name: "", id: "" });
+  console.log("nnnn", selectedFolder);
 
   return (
     <>
       <Navbar />
       <div className="h-screen flex">
-        <Sidebar onSelectFolder={setSelectedFolder} />
+        <Sidebar
+          onSelectFolder={(name, id) => setSelectedFolder({ name, id })}
+        />
         <div className="flex-1">
-          <TodoList folder={selectedFolder} />
+          <TodoList folderDetails={selectedFolder} />
         </div>
       </div>
     </>

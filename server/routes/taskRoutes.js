@@ -4,6 +4,7 @@ import {
   addTask,
   fetchFolders,
   getTasks,
+  removeFolder,
   removeTask,
 } from "../controller/taskController.js";
 
@@ -14,5 +15,6 @@ router.get("/tasks/:folderId", getTasks);
 router.delete("/tasks/:taskId", removeTask);
 router.post("/folders", addFolder);
 router.get("/folders", fetchFolders);
+router.delete("/folders/:folderId", removeFolder);
 
 export default router;

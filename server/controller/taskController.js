@@ -1,6 +1,7 @@
 import {
   createFolder,
   createTask,
+  deleteFolder,
   deleteTask,
   getFolders,
   getTasksByFolder,
@@ -20,6 +21,7 @@ export const addTask = async (req, res) => {
 
 export const getTasks = async (req, res) => {
   const { folderId } = req.params;
+  console.log("id", folderId);
   try {
     const tasks = await getTasksByFolder(folderId);
     res.status(200).json(tasks);
@@ -54,5 +56,18 @@ export const fetchFolders = async (req, res) => {
     res.status(200).json(folders);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch folders" });
+  }
+};
+
+export const removeFolder = async (req, res) => {
+  const { folderId } = req.params;
+
+  try {
+    await deleteFolder(folderId);
+    res
+      .status(200)
+      .json({ message: "Folder and its tasks deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete folder" });
   }
 };
