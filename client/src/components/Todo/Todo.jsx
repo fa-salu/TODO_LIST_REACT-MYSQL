@@ -4,7 +4,6 @@ import TodoList from "./TodoList";
 
 export default function Todo() {
   const [selectedFolder, setSelectedFolder] = useState({ name: "", id: "" });
-  console.log("nnnn", selectedFolder);
 
   return (
     <>

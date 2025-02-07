@@ -2,7 +2,7 @@ import { useState } from "react";
 import AddTodo from "./AddTodo";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { addTask, fetchTasks, removeTask } from "../../api/TaskApi";
-import AddIcon from "@mui/icons-material/Add";
+import AddTaskIcon from "@mui/icons-material/AddTask";
 import { CircularProgress } from "@mui/material";
 
 export default function TodoList({ folderDetails }) {
@@ -57,15 +57,15 @@ export default function TodoList({ folderDetails }) {
   return (
     <div className="flex flex-col h-screen px-2 bg-[#CADCFC] overflow-hidden">
       <div className="flex justify-between items-center border-b h-16">
-        <h2 className="text-2xl text-white font-bold capitalize">
+        <h2 className="text-2xl  text-gray-600 font-bold capitalize">
           {folder} Todo
         </h2>
 
         <button
           onClick={handleOpenDialog}
-          className="bg-gray-100 text-gray-900 font-bold px-4 py-2 rounded hover:bg-gray-200"
+          className="bg-[#13155A] text-gray-100 font-bold px-4 py-2 rounded hover:bg-[#13155acf] cursor-pointer"
         >
-          <AddIcon /> Add
+          <AddTaskIcon /> Add
         </button>
       </div>
 
@@ -76,7 +76,7 @@ export default function TodoList({ folderDetails }) {
           <CircularProgress color="inherit" />
         </div>
       ) : (
-        <ul className="flex-1 max-h-[600px] overflow-y-auto">
+        <ul className="flex-1 max-h-[600px] py-4 overflow-y-auto">
           {todos?.map((todo) => (
             <li
               key={todo.id}

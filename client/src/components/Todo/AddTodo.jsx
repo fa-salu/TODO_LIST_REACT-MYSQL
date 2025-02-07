@@ -6,6 +6,7 @@ import {
   DialogTitle,
   Button,
   TextField,
+  Box,
 } from "@mui/material";
 
 export default function AddTodo({ open, handleClose, handleAddTodo }) {
@@ -21,8 +22,8 @@ export default function AddTodo({ open, handleClose, handleAddTodo }) {
   };
 
   const handleSubmit = () => {
-    if (newTodo.title && newTodo.description && newTodo.deadline) {
-      handleAddTodo(newTodo); // Pass new todo to parent component
+    if (newTodo.title && newTodo.description) {
+      handleAddTodo(newTodo);
       setNewTodo({ title: "", description: "", deadline: "" });
       handleClose();
     } else {
@@ -31,45 +32,98 @@ export default function AddTodo({ open, handleClose, handleAddTodo }) {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Add Todo</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          padding: 2,
+          backgroundColor: "#f9fafb",
+          minWidth: 400,
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          fontSize: "1.5rem",
+          fontWeight: "bold",
+          color: "#333",
+          textAlign: "center",
+        }}
+      >
+        Add New Todo
+      </DialogTitle>
       <DialogContent>
-        <TextField
-          label="Title"
-          name="title"
-          value={newTodo.title}
-          onChange={handleInputChange}
-          fullWidth
-          className="mb-4"
-        />
-        <TextField
-          label="Description"
-          name="description"
-          value={newTodo.description}
-          onChange={handleInputChange}
-          fullWidth
-          className="mb-4"
-        />
-
-        {/* DateTime Picker using native input */}
-        <TextField
-          label="Deadline"
-          name="deadline"
-          type="datetime-local"
-          value={newTodo.deadline}
-          onChange={handleInputChange}
-          fullWidth
-          className="mb-4"
-          InputLabelProps={{
-            shrink: true, // Ensures the label stays visible when date/time is selected
-          }}
-        />
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <TextField
+            label="Title"
+            name="title"
+            value={newTodo.title}
+            onChange={handleInputChange}
+            fullWidth
+            variant="outlined"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              },
+            }}
+          />
+          <TextField
+            label="Description"
+            name="description"
+            value={newTodo.description}
+            onChange={handleInputChange}
+            fullWidth
+            multiline
+            rows={3}
+            variant="outlined"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              },
+            }}
+          />
+          <TextField
+            label="Deadline"
+            name="deadline"
+            type="datetime-local"
+            value={newTodo.deadline}
+            onChange={handleInputChange}
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            variant="outlined"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              },
+            }}
+          />
+        </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
+      <DialogActions sx={{ justifyContent: "center", padding: 2 }}>
+        <Button
+          onClick={handleClose}
+          sx={{
+            backgroundColor: "#e63946",
+            color: "white",
+            "&:hover": { backgroundColor: "#d62839" },
+            borderRadius: 2,
+            px: 3,
+          }}
+        >
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary">
+        <Button
+          onClick={handleSubmit}
+          sx={{
+            backgroundColor: "#457b9d",
+            color: "white",
+            "&:hover": { backgroundColor: "#1d3557" },
+            borderRadius: 2,
+            px: 3,
+          }}
+        >
           Add Todo
         </Button>
       </DialogActions>
