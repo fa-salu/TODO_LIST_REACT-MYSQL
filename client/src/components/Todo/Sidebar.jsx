@@ -9,6 +9,7 @@ import {
   TextField,
   IconButton,
   CircularProgress,
+  Typography,
 } from "@mui/material";
 import FolderDeleteIcon from "@mui/icons-material/FolderDelete";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
@@ -18,6 +19,8 @@ import { addFolder, fetchFolders, deleteFolder } from "../../api/FolderApi";
 export default function Sidebar({ onSelectFolder }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [folderName, setFolderName] = useState("");
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [folderToDelete, setFolderToDelete] = useState(null);
 
   const {
     data: folders,
@@ -68,10 +71,21 @@ export default function Sidebar({ onSelectFolder }) {
     }
   };
 
-  const handleDeleteFolder = (folderId) => {
-    if (window.confirm("Are you sure you want to delete this folder?")) {
-      mutationDeleteFolder.mutate(folderId);
+  const handleOpenDeleteDialog = (folderId) => {
+    setFolderToDelete(folderId);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setFolderToDelete(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (folderToDelete) {
+      mutationDeleteFolder.mutate(folderToDelete);
     }
+    handleCloseDeleteDialog();
   };
 
   return (
@@ -84,7 +98,6 @@ export default function Sidebar({ onSelectFolder }) {
       </div>
 
       <div className="h-[calc(100vh-10rem)] overflow-y-auto">
-        {" "}
         {isLoading ? (
           <Button
             variant="contained"
@@ -111,7 +124,7 @@ export default function Sidebar({ onSelectFolder }) {
                   <FolderIcon style={{ color: "#FFE79D" }} /> {folder.name}
                 </span>
                 <IconButton
-                  onClick={() => handleDeleteFolder(folder.id)}
+                  onClick={() => handleOpenDeleteDialog(folder.id)}
                   size="small"
                 >
                   <FolderDeleteIcon style={{ color: "red" }} />
@@ -121,6 +134,56 @@ export default function Sidebar({ onSelectFolder }) {
           </ul>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            padding: 2,
+            backgroundColor: "#f9fafb",
+            minWidth: 350,
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: "bold", textAlign: "center" }}>
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ textAlign: "center", color: "#333" }}>
+            Are you sure you want to delete this folder? This action cannot be
+            undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", padding: 2 }}>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            sx={{
+              backgroundColor: "#457b9d",
+              color: "white",
+              "&:hover": { backgroundColor: "#1d3557" },
+              borderRadius: 2,
+              px: 3,
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            sx={{
+              backgroundColor: "#e63946",
+              color: "white",
+              "&:hover": { backgroundColor: "#d62839" },
+              borderRadius: 2,
+              px: 3,
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={openDialog}
