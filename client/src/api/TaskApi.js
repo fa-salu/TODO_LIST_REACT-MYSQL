@@ -23,6 +23,15 @@ export const addTask = async ({ title, description, deadline, folderId }) => {
   }
 };
 
+export const updateTask = async (taskId, updatedTask) => {
+  try {
+    const response = await axiosInstance.put(`/tasks/${taskId}`, updatedTask);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to update task");
+  }
+};
+
 export const removeTask = async (taskId) => {
   try {
     const response = await axiosInstance.delete(`/tasks/${taskId}`);

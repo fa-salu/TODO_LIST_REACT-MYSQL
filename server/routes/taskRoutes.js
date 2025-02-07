@@ -2,6 +2,7 @@ import express from "express";
 import {
   addFolder,
   addTask,
+  editTask,
   fetchFolders,
   getTasks,
   removeFolder,
@@ -12,6 +13,7 @@ const router = express.Router();
 
 router.post("/tasks", addTask);
 router.get("/tasks/:folderId", getTasks);
+router.put("/tasks/:taskId", editTask);
 router.delete("/tasks/:taskId", removeTask);
 router.post("/folders", addFolder);
 router.get("/folders", fetchFolders);

@@ -1,26 +1,24 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-  TextField,
   IconButton,
   CircularProgress,
+  TextField,
+  Button,
   Typography,
 } from "@mui/material";
 import FolderDeleteIcon from "@mui/icons-material/FolderDelete";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import FolderIcon from "@mui/icons-material/Folder";
 import { addFolder, fetchFolders, deleteFolder } from "../../api/FolderApi";
+import CustomDialog from "../ui/CustomDialog";
 
 export default function Sidebar({ onSelectFolder }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState(null);
+  const [openAlertDialog, setOpenAlertDialog] = useState(false);
 
   const {
     data: folders,
@@ -53,13 +51,8 @@ export default function Sidebar({ onSelectFolder }) {
     },
   });
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
 
   const handleAddFolder = () => {
     if (folderName) {
@@ -67,9 +60,11 @@ export default function Sidebar({ onSelectFolder }) {
       setFolderName("");
       setOpenDialog(false);
     } else {
-      alert("Please enter a folder name");
+      setOpenAlertDialog(true);
     }
   };
+
+  const handleCloseAlertDialog = () => setOpenAlertDialog(false);
 
   const handleOpenDeleteDialog = (folderId) => {
     setFolderToDelete(folderId);
@@ -135,120 +130,110 @@ export default function Sidebar({ onSelectFolder }) {
         )}
       </div>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={openDeleteDialog}
-        onClose={handleCloseDeleteDialog}
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            padding: 2,
-            backgroundColor: "#f9fafb",
-            minWidth: 350,
-          },
-        }}
-      >
-        <DialogTitle sx={{ fontWeight: "bold", textAlign: "center" }}>
-          Confirm Deletion
-        </DialogTitle>
-        <DialogContent>
-          <Typography sx={{ textAlign: "center", color: "#333" }}>
-            Are you sure you want to delete this folder? This action cannot be
-            undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", padding: 2 }}>
-          <Button
-            onClick={handleCloseDeleteDialog}
-            sx={{
-              backgroundColor: "#457b9d",
-              color: "white",
-              "&:hover": { backgroundColor: "#1d3557" },
-              borderRadius: 2,
-              px: 3,
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            sx={{
-              backgroundColor: "#e63946",
-              color: "white",
-              "&:hover": { backgroundColor: "#d62839" },
-              borderRadius: 2,
-              px: 3,
-            }}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
+      <CustomDialog
         open={openDialog}
         onClose={handleCloseDialog}
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            padding: 2,
-            backgroundColor: "#f9fafb",
-            minWidth: 400,
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            color: "#333",
-            textAlign: "center",
-          }}
-        >
-          Create New Folder
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Folder Name"
-            value={folderName}
-            onChange={(e) => setFolderName(e.target.value)}
-            fullWidth
-            variant="outlined"
-            sx={{
-              "& .MuiOutlinedInput-root": {
+        title="Create New Folder"
+        actions={
+          <>
+            <Button
+              onClick={handleCloseDialog}
+              sx={{
+                backgroundColor: "#e63946",
+                color: "white",
+                "&:hover": { backgroundColor: "#d62839" },
                 borderRadius: 2,
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", padding: 2 }}>
-          <Button
-            onClick={handleCloseDialog}
-            sx={{
-              backgroundColor: "#e63946",
-              color: "white",
-              "&:hover": { backgroundColor: "#d62839" },
+                px: 3,
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddFolder}
+              disabled={mutation.isLoading}
+              sx={{
+                backgroundColor: "#457b9d",
+                color: "white",
+                "&:hover": { backgroundColor: "#1d3557" },
+                borderRadius: 2,
+                px: 3,
+              }}
+            >
+              {mutation.isLoading ? "Creating..." : "Create"}
+            </Button>
+          </>
+        }
+      >
+        <TextField
+          label="Folder Name"
+          value={folderName}
+          onChange={(e) => setFolderName(e.target.value)}
+          fullWidth
+          variant="outlined"
+          sx={{
+            "& .MuiOutlinedInput-root": {
               borderRadius: 2,
-              px: 3,
-            }}
-          >
-            Cancel
-          </Button>
+            },
+          }}
+        />
+      </CustomDialog>
+
+      <CustomDialog
+        open={openAlertDialog}
+        onClose={handleCloseAlertDialog}
+        title="Error"
+        actions={
           <Button
-            onClick={handleAddFolder}
-            disabled={mutation.isLoading}
-            sx={{
-              backgroundColor: "#457b9d",
-              color: "white",
-              "&:hover": { backgroundColor: "#1d3557" },
-              borderRadius: 2,
-              px: 3,
-            }}
+            onClick={handleCloseAlertDialog}
+            sx={{ backgroundColor: "#e63946", color: "white" }}
           >
-            {mutation.isLoading ? "Creating..." : "Create"}
+            OK
           </Button>
-        </DialogActions>
-      </Dialog>
+        }
+      >
+        <Typography sx={{ textAlign: "center", color: "#333" }}>
+          Please enter a folder name.
+        </Typography>
+      </CustomDialog>
+
+      <CustomDialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        title="Confirm Deletion"
+        actions={
+          <>
+            <Button
+              onClick={handleCloseDeleteDialog}
+              sx={{
+                backgroundColor: "#457b9d",
+                color: "white",
+                "&:hover": { backgroundColor: "#1d3557" },
+                borderRadius: 2,
+                px: 3,
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              sx={{
+                backgroundColor: "#e63946",
+                color: "white",
+                "&:hover": { backgroundColor: "#d62839" },
+                borderRadius: 2,
+                px: 3,
+              }}
+            >
+              Delete
+            </Button>
+          </>
+        }
+      >
+        <Typography sx={{ textAlign: "center", color: "#333" }}>
+          Are you sure you want to delete this folder? This action cannot be
+          undone.
+        </Typography>
+      </CustomDialog>
     </div>
   );
 }

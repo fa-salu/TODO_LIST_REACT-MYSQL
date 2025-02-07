@@ -16,6 +16,13 @@ export const getTasksByFolder = async (folderId) => {
   return rows;
 };
 
+export const updateTask = async (taskId, title, description, deadline) => {
+  await pool.query(
+    "UPDATE tasks SET title = ?, description = ?, deadline = ? WHERE id = ?",
+    [title, description, deadline, taskId]
+  );
+};
+
 export const deleteTask = async (taskId) => {
   await pool.query("DELETE FROM tasks WHERE id = ?", [taskId]);
 };

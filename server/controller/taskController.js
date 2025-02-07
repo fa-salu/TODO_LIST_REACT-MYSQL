@@ -5,6 +5,7 @@ import {
   deleteTask,
   getFolders,
   getTasksByFolder,
+  updateTask,
 } from "../models/taskModel.js";
 
 export const addTask = async (req, res) => {
@@ -27,6 +28,17 @@ export const getTasks = async (req, res) => {
     res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch tasks" });
+  }
+};
+
+export const editTask = async (req, res) => {
+  const { taskId } = req.params;
+  const { title, description, deadline } = req.body;
+  try {
+    await updateTask(taskId, title, description, deadline);
+    res.status(200).json({ message: "Task updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update task" });
   }
 };
 
