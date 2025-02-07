@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar";
 import TodoList from "./TodoList";
-import Navbar from "../Navbar/Navbar";
 
 export default function Todo() {
   const [selectedFolder, setSelectedFolder] = useState({ name: "", id: "" });
@@ -9,7 +8,6 @@ export default function Todo() {
 
   return (
     <>
-      <Navbar />
       <div className="h-screen flex">
         <Sidebar
           onSelectFolder={(name, id) => setSelectedFolder({ name, id })}

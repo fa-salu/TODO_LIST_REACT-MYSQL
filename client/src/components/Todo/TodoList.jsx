@@ -55,17 +55,19 @@ export default function TodoList({ folderDetails }) {
   if (isError) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="flex-1 p-4 bg-[#22263A] h-full">
-      <h2 className="text-2xl text-white font-bold mb-4 capitalize">
-        {folder} Todo
-      </h2>
+    <div className="flex flex-col h-screen px-2 bg-[#CADCFC] overflow-hidden">
+      <div className="flex justify-between items-center border-b h-16">
+        <h2 className="text-2xl text-white font-bold capitalize">
+          {folder} Todo
+        </h2>
 
-      <button
-        onClick={handleOpenDialog}
-        className="mb-4 bg-gray-100 text-gray-900 font-bold px-4 py-2 rounded hover:bg-gray-200"
-      >
-        <AddIcon /> Add
-      </button>
+        <button
+          onClick={handleOpenDialog}
+          className="bg-gray-100 text-gray-900 font-bold px-4 py-2 rounded hover:bg-gray-200"
+        >
+          <AddIcon /> Add
+        </button>
+      </div>
 
       {isLoading ? (
         <div className="flex items-center">
@@ -74,7 +76,7 @@ export default function TodoList({ folderDetails }) {
           <CircularProgress color="inherit" />
         </div>
       ) : (
-        <ul>
+        <ul className="flex-1 max-h-[600px] overflow-y-auto">
           {todos?.map((todo) => (
             <li
               key={todo.id}

@@ -10,8 +10,9 @@ import {
   IconButton,
   CircularProgress,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
+import FolderDeleteIcon from "@mui/icons-material/FolderDelete";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import FolderIcon from "@mui/icons-material/Folder";
 import { addFolder, fetchFolders, deleteFolder } from "../../api/FolderApi";
 
 export default function Sidebar({ onSelectFolder }) {
@@ -68,11 +69,11 @@ export default function Sidebar({ onSelectFolder }) {
   };
 
   return (
-    <div className="w-64 bg-[#202124] text-white h-screen p-4">
-      <div className="flex justify-between items-center mb-4">
+    <div className="w-64 bg-[#CADCFC] text-gray-600 h-screen p-4 border-r">
+      <div className="flex justify-between items-center mb-4 border-b ">
         <h2 className="text-2xl font-bold">Todo</h2>
         <IconButton onClick={handleOpenDialog}>
-          <AddIcon style={{ color: "white" }} />
+          <CreateNewFolderIcon style={{ color: "#FFE79D" }} />
         </IconButton>
       </div>
 
@@ -93,19 +94,19 @@ export default function Sidebar({ onSelectFolder }) {
           {folders?.map((folder) => (
             <li
               key={folder.id}
-              className="flex justify-between items-center cursor-pointer p-2 hover:bg-gray-700 rounded"
+              className="flex justify-between items-center cursor-pointer p-2 hover:bg-gray-100 rounded"
             >
               <span
                 className="flex-auto capitalize"
                 onClick={() => onSelectFolder(folder.name, folder.id)}
               >
-                {folder.name}
+                <FolderIcon style={{ color: "#FFE79D" }} /> {folder.name}
               </span>
               <IconButton
                 onClick={() => handleDeleteFolder(folder.id)}
                 size="small"
               >
-                <DeleteIcon style={{ color: "red" }} />
+                <FolderDeleteIcon style={{ color: "red" }} />
               </IconButton>
             </li>
           ))}
