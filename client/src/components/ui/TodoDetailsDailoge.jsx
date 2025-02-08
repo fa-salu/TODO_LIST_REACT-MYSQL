@@ -12,6 +12,7 @@ export default function TodoDetailsDialog({
   handleClose,
   todo,
   handleDelete,
+  handleUpdate,
 }) {
   return (
     <Dialog
@@ -56,6 +57,18 @@ export default function TodoDetailsDialog({
           }}
         >
           Delete
+        </Button>
+        <Button
+          onClick={handleUpdate}
+          sx={{
+            backgroundColor: "#D367C7",
+            color: "white",
+            "&:hover": { backgroundColor: "#1d3557" },
+            borderRadius: 2,
+            px: 3,
+          }}
+        >
+          Update
         </Button>
         <Button
           onClick={handleClose}

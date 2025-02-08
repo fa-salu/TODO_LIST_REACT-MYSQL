@@ -23,7 +23,7 @@ export const addTask = async ({ title, description, deadline, folderId }) => {
   }
 };
 
-export const updateTask = async (taskId, updatedTask) => {
+export const updateTask = async ({ taskId, updatedTask }) => {
   try {
     const response = await axiosInstance.put(`/tasks/${taskId}`, updatedTask);
     return response.data;

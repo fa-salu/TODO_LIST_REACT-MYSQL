@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AddTodo from "./AddTodo";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { addTask, fetchTasks, removeTask } from "../../api/TaskApi";
+import { addTask, fetchTasks, removeTask, updateTask } from "../../api/TaskApi";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import { CircularProgress } from "@mui/material";
 import TodoDetailsDialog from "../ui/TodoDetailsDailoge";
@@ -11,6 +11,7 @@ export default function TodoList({ folderDetails }) {
   const folder = folderDetails?.name;
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const {
     data: todos,
@@ -35,10 +36,31 @@ export default function TodoList({ folderDetails }) {
     onSuccess: () => queryClient.invalidateQueries(["tasks", folder]),
   });
 
-  const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => setOpenDialog(false);
-  const handleAddTodo = (newTodo) =>
-    mutationAddTask.mutate({ ...newTodo, folderId: folderId });
+  const mutationUpdateTask = useMutation({
+    mutationFn: updateTask,
+    onSuccess: () => queryClient.invalidateQueries(["tasks", folder]),
+  });
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+    setIsEditing(false);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedTodo(null);
+    setIsEditing(false);
+  };
+
+  const handleAddTodo = (newTodo) => {
+    if (isEditing) {
+      mutationUpdateTask.mutate({ taskId: newTodo.id, updatedTask: newTodo });
+    } else {
+      mutationAddTask.mutate({ ...newTodo, folderId: folderId });
+    }
+    handleCloseDialog();
+  };
+
   const handleDeleteTask = (taskId) => {
     mutationRemoveTask.mutate(taskId, {
       onSuccess: () => {
@@ -49,6 +71,11 @@ export default function TodoList({ folderDetails }) {
 
   const handleOpenDetails = (todo) => setSelectedTodo(todo);
   const handleCloseDetails = () => setSelectedTodo(null);
+
+  const handleUpdateClick = () => {
+    setIsEditing(true);
+    setOpenDialog(true);
+  };
 
   if (isError) return <div>Error: {error.message}</div>;
 
@@ -90,12 +117,15 @@ export default function TodoList({ folderDetails }) {
         open={openDialog}
         handleClose={handleCloseDialog}
         handleAddTodo={handleAddTodo}
+        isEditing={isEditing}
+        selectedTodo={selectedTodo}
       />
       <TodoDetailsDialog
         open={!!selectedTodo}
         handleClose={handleCloseDetails}
         todo={selectedTodo}
         handleDelete={handleDeleteTask}
+        handleUpdate={handleUpdateClick}
       />
     </div>
   );

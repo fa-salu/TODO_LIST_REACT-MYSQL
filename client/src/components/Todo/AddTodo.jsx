@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogActions,
@@ -9,13 +9,31 @@ import {
   Box,
 } from "@mui/material";
 
-export default function AddTodo({ open, handleClose, handleAddTodo }) {
+export default function AddTodo({
+  open,
+  handleClose,
+  handleAddTodo,
+  isEditing,
+  selectedTodo,
+}) {
   const [newTodo, setNewTodo] = useState({
     title: "",
     description: "",
     deadline: "",
   });
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (isEditing && selectedTodo) {
+      setNewTodo({
+        title: selectedTodo.title,
+        description: selectedTodo.description,
+        deadline: selectedTodo.deadline,
+      });
+    } else {
+      setNewTodo({ title: "", description: "", deadline: "" });
+    }
+  }, [isEditing, selectedTodo]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +42,7 @@ export default function AddTodo({ open, handleClose, handleAddTodo }) {
 
   const handleSubmit = () => {
     if (newTodo.title && newTodo.description) {
-      handleAddTodo(newTodo);
+      handleAddTodo({ ...newTodo, id: selectedTodo?.id });
       setNewTodo({ title: "", description: "", deadline: "" });
       handleClose();
     } else {
@@ -54,7 +72,7 @@ export default function AddTodo({ open, handleClose, handleAddTodo }) {
             textAlign: "center",
           }}
         >
-          Add New Todo
+          {isEditing ? "Edit Todo" : "Add New Todo"}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -126,7 +144,7 @@ export default function AddTodo({ open, handleClose, handleAddTodo }) {
               px: 3,
             }}
           >
-            Add Todo
+            {isEditing ? "Save Changes" : "Add Todo"}
           </Button>
         </DialogActions>
       </Dialog>
