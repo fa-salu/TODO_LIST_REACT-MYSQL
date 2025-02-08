@@ -60,7 +60,7 @@ export default function AddTodo({
             borderRadius: 3,
             padding: 2,
             backgroundColor: "#f9fafb",
-            minWidth: 400,
+            minWidth: { xs: 350, md: 400 },
           },
         }}
       >

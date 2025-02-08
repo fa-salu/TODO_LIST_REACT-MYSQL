@@ -3,6 +3,8 @@ import AddTodo from "./AddTodo";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { addTask, fetchTasks, removeTask, updateTask } from "../../api/TaskApi";
 import AddTaskIcon from "@mui/icons-material/AddTask";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { CircularProgress } from "@mui/material";
 import TodoDetailsDialog from "../ui/TodoDetailsDailoge";
 
@@ -82,8 +84,8 @@ export default function TodoList({ folderDetails }) {
   return (
     <div className="flex flex-col h-screen px-2 bg-[#CADCFC] overflow-hidden">
       <div className="flex justify-between items-center border-b h-16">
-        <h2 className="text-2xl text-gray-600 font-bold capitalize">
-          {folder} Todo
+        <h2 className="text-2xl text-gray-600 font-bold ml-12 md:ml-6 capitalize">
+          {folder}
         </h2>
         <button
           onClick={handleOpenDialog}
@@ -94,20 +96,26 @@ export default function TodoList({ folderDetails }) {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center">
+        <div className="flex items-center justify-center flex-1">
           <CircularProgress color="secondary" />
           <CircularProgress color="success" />
           <CircularProgress color="inherit" />
         </div>
       ) : (
-        <ul className="flex-1 max-h-[600px] py-4 overflow-y-auto">
+        <ul className="flex-1 max-h-[600px] py-4 overflow-y-auto max-w-lvh w-full mx-auto">
           {todos?.map((todo) => (
             <li
               key={todo.id}
               onClick={() => handleOpenDetails(todo)}
-              className="p-4 bg-gray-100 rounded-lg mb-2 shadow cursor-pointer hover:bg-gray-200"
+              className="flex py-4 px-2 bg-gray-100 rounded-lg mb-2 shadow cursor-pointer hover:bg-gray-200"
             >
-              <h3 className="font-bold">{todo.title}</h3>
+              <span>
+                <DragIndicatorIcon />
+              </span>
+              <span>
+                <CheckBoxOutlineBlankIcon />
+              </span>
+              <h3 className="font-bold px-4">{todo.title}</h3>
             </li>
           ))}
         </ul>

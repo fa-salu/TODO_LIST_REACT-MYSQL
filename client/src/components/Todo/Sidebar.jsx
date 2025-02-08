@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import FolderDeleteIcon from "@mui/icons-material/FolderDelete";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import CloseIcon from "@mui/icons-material/Close";
 import FolderIcon from "@mui/icons-material/Folder";
 import { addFolder, fetchFolders, deleteFolder } from "../../api/FolderApi";
 import CustomDialog from "../ui/CustomDialog";
@@ -86,7 +87,12 @@ export default function Sidebar({ onSelectFolder }) {
   return (
     <div className="w-64 bg-[#CADCFC] text-gray-600 h-screen p-6 border-r">
       <div className="flex justify-between items-center mb-4 border-b">
-        <h2 className="text-2xl font-bold">Todo</h2>
+        <h2 className="text-2xl font-bold ml-5 md:ml-0">
+          <span className="absolute top-6 left-3 md:hidden">
+            <CloseIcon />
+          </span>{" "}
+          Todo
+        </h2>
         <IconButton onClick={handleOpenDialog}>
           <CreateNewFolderIcon style={{ color: "#FFE79D" }} />
         </IconButton>

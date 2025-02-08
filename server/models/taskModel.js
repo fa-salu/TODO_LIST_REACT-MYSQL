@@ -12,7 +12,6 @@ export const getTasksByFolder = async (folderId) => {
   const [rows] = await pool.query("SELECT * FROM tasks WHERE folder_id = ?", [
     folderId,
   ]);
-  console.log("row", rows);
   return rows;
 };
 

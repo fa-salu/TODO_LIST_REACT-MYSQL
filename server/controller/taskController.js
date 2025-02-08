@@ -22,7 +22,6 @@ export const addTask = async (req, res) => {
 
 export const getTasks = async (req, res) => {
   const { folderId } = req.params;
-  console.log("id", folderId);
   try {
     const tasks = await getTasksByFolder(folderId);
     res.status(200).json(tasks);
@@ -34,7 +33,6 @@ export const getTasks = async (req, res) => {
 export const editTask = async (req, res) => {
   const { taskId } = req.params;
   const { title, description, deadline } = req.body;
-  console.log("title, description, deadline", req.body);
   try {
     await updateTask(taskId, title, description, deadline);
     res.status(200).json({ message: "Task updated successfully" });
