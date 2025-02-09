@@ -28,10 +28,12 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import SavingOrderindicator from "../ui/SavingOrderindicator";
 
 const SortableTodoItem = ({ todo, handleOpenDetails }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: todo.id });
+
   const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
@@ -39,11 +41,10 @@ const SortableTodoItem = ({ todo, handleOpenDetails }) => {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
-      onClick={() => handleOpenDetails(todo)}
       className="flex py-4 px-2 bg-gray-100 rounded-lg mb-2 shadow cursor-pointer hover:bg-gray-200"
+      onClick={() => handleOpenDetails(todo)}
     >
-      <span>
+      <span {...listeners} className="cursor-grab">
         <DragIndicatorIcon />
       </span>
       <span>
@@ -61,6 +62,7 @@ export default function TodoList({ folderDetails }) {
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [todos, setTodos] = useState([]);
+  const [isUpdatingOrder, setIsUpdatingOrder] = useState(false);
 
   const {
     data: fetchedTodos,
@@ -84,10 +86,12 @@ export default function TodoList({ folderDetails }) {
   };
 
   const queryClient = useQueryClient();
-
   const mutationReorderTasks = useMutation({
     mutationFn: updateTaskOrder,
-    onSuccess: () => queryClient.invalidateQueries(["tasks", folder]),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["tasks", folder]);
+      setIsUpdatingOrder(false);
+    },
   });
 
   const sensors = useSensors(
@@ -96,8 +100,11 @@ export default function TodoList({ folderDetails }) {
   );
 
   const onDragEnd = (event) => {
+    if (isUpdatingOrder) return;
     const { active, over } = event;
     if (!over || active.id === over.id) return;
+
+    setIsUpdatingOrder(true);
 
     setTodos((prevTodos) => {
       const oldIndex = prevTodos.findIndex((task) => task.id === active.id);
@@ -116,6 +123,7 @@ export default function TodoList({ folderDetails }) {
 
   return (
     <div className="flex flex-col h-screen px-2 bg-[#CADCFC] overflow-hidden">
+      {isUpdatingOrder && <SavingOrderindicator />}
       <div className="flex justify-between items-center border-b h-16">
         <h2 className="text-2xl text-gray-600 font-bold ml-12 md:ml-6 capitalize">
           {folder}
@@ -157,9 +165,19 @@ export default function TodoList({ folderDetails }) {
         handleClose={() => setOpenDialog(false)}
         handleAddTodo={(newTodo) => {
           if (isEditing) {
-            updateTask({ taskId: newTodo.id, updatedTask: newTodo });
+            updateTask({ taskId: newTodo.id, updatedTask: newTodo }).then(
+              () => {
+                setTodos((prevTodos) =>
+                  prevTodos.map((todo) =>
+                    todo.id === newTodo.id ? newTodo : todo
+                  )
+                );
+              }
+            );
           } else {
-            addTask({ ...newTodo, folderId });
+            addTask({ ...newTodo, folderId }).then((addedTask) => {
+              setTodos((prevTodos) => [...prevTodos, addedTask]);
+            });
           }
           setOpenDialog(false);
           setIsEditing(false);

@@ -1,3 +1,4 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
   DialogTitle,
@@ -5,15 +6,36 @@ import {
   DialogActions,
   Button,
   Typography,
+  CircularProgress,
 } from "@mui/material";
+import { removeTask } from "../../api/TaskApi";
+import { useState } from "react";
 
 export default function TodoDetailsDialog({
   open,
   handleClose,
   todo,
-  handleDelete,
   handleUpdate,
 }) {
+  const queryClient = useQueryClient();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const deleteMutation = useMutation({
+    mutationFn: removeTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["tasks"]);
+      handleClose();
+    },
+  });
+
+  const handleDelete = () => {
+    if (!todo?.id) return;
+    setIsDeleting(true);
+    deleteMutation.mutate(todo.id, {
+      onSettled: () => setIsDeleting(false),
+    });
+  };
+
   return (
     <Dialog
       open={open}
@@ -47,7 +69,8 @@ export default function TodoDetailsDialog({
       </DialogContent>
       <DialogActions sx={{ justifyContent: "center", padding: 2 }}>
         <Button
-          onClick={() => handleDelete(todo?.id)}
+          onClick={handleDelete}
+          disabled={isDeleting}
           sx={{
             backgroundColor: "#e63946",
             color: "white",
@@ -56,7 +79,11 @@ export default function TodoDetailsDialog({
             px: 3,
           }}
         >
-          Delete
+          {isDeleting ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Delete"
+          )}
         </Button>
         <Button
           onClick={handleUpdate}

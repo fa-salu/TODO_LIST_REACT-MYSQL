@@ -26,24 +26,23 @@ export default function AddTodo({
   useEffect(() => {
     if (isEditing && selectedTodo) {
       setNewTodo({
-        title: selectedTodo.title,
-        description: selectedTodo.description,
-        deadline: selectedTodo.deadline,
+        title: selectedTodo?.title || "",
+        description: selectedTodo?.description || "",
+        deadline: selectedTodo?.deadline || "",
       });
     } else {
       setNewTodo({ title: "", description: "", deadline: "" });
     }
-  }, [isEditing, selectedTodo]);
+  }, [isEditing, selectedTodo, open]); // Added `open` to reset values properly
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewTodo({ ...newTodo, [name]: value });
+    setNewTodo((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = () => {
-    if (newTodo.title && newTodo.description) {
+    if (newTodo.title.trim() && newTodo.description.trim()) {
       handleAddTodo({ ...newTodo, id: selectedTodo?.id });
-      setNewTodo({ title: "", description: "", deadline: "" });
       handleClose();
     } else {
       setErrorDialogOpen(true);
@@ -83,11 +82,6 @@ export default function AddTodo({
               onChange={handleInputChange}
               fullWidth
               variant="outlined"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
-                },
-              }}
             />
             <TextField
               label="Description"
@@ -98,11 +92,6 @@ export default function AddTodo({
               multiline
               rows={3}
               variant="outlined"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
-                },
-              }}
             />
             <TextField
               label="Deadline"
@@ -113,11 +102,6 @@ export default function AddTodo({
               fullWidth
               InputLabelProps={{ shrink: true }}
               variant="outlined"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
-                },
-              }}
             />
           </Box>
         </DialogContent>
@@ -152,15 +136,13 @@ export default function AddTodo({
       <Dialog
         open={errorDialogOpen}
         onClose={() => setErrorDialogOpen(false)}
-        PaperProps={{
-          sx: { borderRadius: 3, padding: 2, minWidth: 300 },
-        }}
+        PaperProps={{ sx: { borderRadius: 3, padding: 2, minWidth: 300 } }}
       >
         <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
           Error
         </DialogTitle>
         <DialogContent sx={{ textAlign: "center" }}>
-          {!newTodo.title ? "Please fill title" : "please fill description"}
+          {!newTodo.title ? "Please fill title" : "Please fill description"}
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center" }}>
           <Button
