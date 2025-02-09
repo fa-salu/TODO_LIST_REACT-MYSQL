@@ -4,8 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
-  Typography,
 } from "@mui/material";
 
 export default function CustomDialog({

@@ -33,7 +33,7 @@ export default function AuthForm() {
         {
           onSuccess: (data) => {
             Cookies.set("token", data.token, { expires: 7, secure: true });
-            navigate("/todos");
+            navigate("/dashboard");
           },
         }
       );
