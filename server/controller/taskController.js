@@ -43,7 +43,6 @@ export const editTask = async (req, res) => {
 };
 
 export const reorderTasks = async (req, res) => {
-  console.log("reorder:", req.body);
   const tasks = req.body;
   try {
     await updateTaskOrder(tasks);

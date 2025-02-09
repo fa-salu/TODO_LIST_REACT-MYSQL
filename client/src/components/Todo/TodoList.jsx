@@ -11,7 +11,6 @@ import {
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import { CircularProgress } from "@mui/material";
 import TodoDetailsDialog from "../ui/TodoDetailsDailoge";
 import {
   DndContext,
@@ -29,6 +28,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import SavingOrderindicator from "../ui/SavingOrderindicator";
+import SkeletonTodoItem from "../ui/Skelton/todosSkelton";
+import ErrorMessage from "../ui/ErrorMessage";
 
 const SortableTodoItem = ({ todo, handleOpenDetails }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -119,7 +120,14 @@ export default function TodoList({ folderDetails }) {
     });
   };
 
-  if (isError) return <div>Error: {error.message}</div>;
+  if (isError) {
+    return (
+      <ErrorMessage
+        message={error.message}
+        onRetry={() => queryClient.invalidateQueries(["tasks", folder])}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen px-2 bg-[#CADCFC] overflow-hidden">
@@ -137,9 +145,11 @@ export default function TodoList({ folderDetails }) {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center flex-1">
-          <CircularProgress color="secondary" />
-        </div>
+        <ul className="flex-1 max-h-[600px] py-4 overflow-y-auto max-w-lvh w-full mx-auto">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <SkeletonTodoItem key={index} />
+          ))}
+        </ul>
       ) : (
         <DndContext
           sensors={sensors}
