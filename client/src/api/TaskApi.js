@@ -23,6 +23,14 @@ export const addTask = async ({ title, description, deadline, folderId }) => {
   }
 };
 
+export const updateTaskOrder = async (tasks) => {
+  try {
+    await axiosInstance.post("/tasks/reorder", tasks);
+  } catch (error) {
+    throw new Error("Failed to update task order");
+  }
+};
+
 export const updateTask = async ({ taskId, updatedTask }) => {
   try {
     const response = await axiosInstance.put(`/tasks/${taskId}`, updatedTask);

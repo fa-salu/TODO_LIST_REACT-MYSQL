@@ -6,6 +6,7 @@ import {
   getFolders,
   getTasksByFolder,
   updateTask,
+  updateTaskOrder,
 } from "../models/taskModel.js";
 
 export const addTask = async (req, res) => {
@@ -38,6 +39,17 @@ export const editTask = async (req, res) => {
     res.status(200).json({ message: "Task updated successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to update task" });
+  }
+};
+
+export const reorderTasks = async (req, res) => {
+  console.log("reorder:", req.body);
+  const tasks = req.body;
+  try {
+    await updateTaskOrder(tasks);
+    res.status(200).json({ message: "Task order updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update task order" });
   }
 };
 

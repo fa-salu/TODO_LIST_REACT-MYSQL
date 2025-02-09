@@ -9,9 +9,10 @@ export const createTask = async (title, description, deadline, folderId) => {
 };
 
 export const getTasksByFolder = async (folderId) => {
-  const [rows] = await pool.query("SELECT * FROM tasks WHERE folder_id = ?", [
-    folderId,
-  ]);
+  const [rows] = await pool.query(
+    "SELECT * FROM tasks WHERE folder_id = ? ORDER BY position ASC",
+    [folderId]
+  );
   return rows;
 };
 
@@ -20,6 +21,27 @@ export const updateTask = async (taskId, title, description, deadline) => {
     "UPDATE tasks SET title = ?, description = ?, deadline = ? WHERE id = ?",
     [title, description, deadline, taskId]
   );
+};
+
+export const updateTaskOrder = async (tasks) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    for (const task of tasks) {
+      await connection.query("UPDATE tasks SET position = ? WHERE id = ?", [
+        task.position,
+        task.id,
+      ]);
+    }
+
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 };
 
 export const deleteTask = async (taskId) => {
