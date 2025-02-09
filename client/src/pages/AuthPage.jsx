@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, TextField, Paper, Typography, Link, Box } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser, registerUser } from "../api/AuthApi";
+import Cookies from "js-cookie";
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,15 +13,39 @@ export default function AuthForm() {
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
+  const registerMutation = useMutation({
+    mutationFn: registerUser,
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+  });
+
   const handleAuth = () => {
-    if (email && password) {
-      if (isLogin) {
-        localStorage.setItem("user", "loggedin");
-        navigate("/todos");
-      } else {
-        localStorage.setItem("user", JSON.stringify({ name, email }));
-        setIsLogin(true);
-      }
+    if (!email || !password || (!isLogin && !name)) {
+      console.error("Validation error: Missing fields");
+      return;
+    }
+
+    if (isLogin) {
+      loginMutation.mutate(
+        { email, password },
+        {
+          onSuccess: (data) => {
+            Cookies.set("token", data.token, { expires: 7, secure: true });
+            navigate("/todos");
+          },
+        }
+      );
+    } else {
+      registerMutation.mutate(
+        { username: name, email, password },
+        {
+          onSuccess: () => {
+            setIsLogin(true);
+          },
+        }
+      );
     }
   };
 
@@ -83,15 +110,26 @@ export default function AuthForm() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {/* Centering the Button */}
+          {(registerMutation.error || loginMutation.error) && (
+            <Typography color="error" sx={{ textAlign: "center", mb: 2 }}>
+              {registerMutation.error?.response?.data?.error ||
+                loginMutation.error?.response?.data?.error}
+            </Typography>
+          )}
+
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Button
               variant="outlined"
               color="inherit"
               sx={{ width: "150px" }}
               onClick={handleAuth}
+              disabled={registerMutation.isLoading || loginMutation.isLoading}
             >
-              {isLogin ? "Login" : "Register"}
+              {registerMutation.isLoading || loginMutation.isLoading
+                ? "Loading..."
+                : isLogin
+                ? "Login"
+                : "Register"}
             </Button>
           </Box>
 

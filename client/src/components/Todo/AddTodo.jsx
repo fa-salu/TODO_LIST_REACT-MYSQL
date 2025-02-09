@@ -33,7 +33,7 @@ export default function AddTodo({
     } else {
       setNewTodo({ title: "", description: "", deadline: "" });
     }
-  }, [isEditing, selectedTodo, open]); // Added `open` to reset values properly
+  }, [isEditing, selectedTodo, open]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
