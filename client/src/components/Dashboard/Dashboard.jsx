@@ -1,37 +1,38 @@
 import React from "react";
-import { Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { Logout, Settings } from "@mui/icons-material";
-import { CalendarPage, ProfileCard, StatsPage } from "./Cards";
+import { Header } from "./Header";
+import { ProfileCard } from "./ProfileCard";
+import { StatsGrid } from "./StatusGrid";
+import { CalendarCard } from "./CalenderCard";
 import Cookies from "js-cookie";
 
-export default function Dashboard() {
-  const navigate = useNavigate();
-
+const Dashboard = () => {
   const handleLogout = () => {
     Cookies.remove("token");
     navigate("/");
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6 space-y-6">
-      <div className="flex justify-end w-full max-w-4xl gap-5 space-x-4">
-        <Button variant="outlined" color="primary" startIcon={<Settings />}>
-          Settings
-        </Button>
-        <Button
-          onClick={handleLogout}
-          variant="outlined"
-          color="secondary"
-          startIcon={<Logout />}
-        >
-          Logout
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <Header onLogout={handleLogout} />
 
-      <ProfileCard />
-      <CalendarPage />
-      <StatsPage />
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-3">
+            <ProfileCard
+              name="John Doe"
+              email="johndoe@example.com"
+              completion={85}
+            />
+          </div>
+
+          <div className="col-span-12 lg:col-span-9 space-y-6">
+            <StatsGrid />
+            <CalendarCard />
+          </div>
+        </div>
+      </main>
     </div>
   );
-}
+};
+
+export default Dashboard;
