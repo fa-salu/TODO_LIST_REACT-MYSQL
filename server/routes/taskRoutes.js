@@ -5,6 +5,7 @@ import {
   editTask,
   fetchFolders,
   getTasks,
+  getTasksByUserId,
   removeFolder,
   removeTask,
   reorderTasks,
@@ -16,6 +17,7 @@ const router = express.Router();
 router.post("/tasks", verifyUser, addTask);
 router.get("/tasks/:folderId", verifyUser, getTasks);
 router.put("/tasks/:taskId", verifyUser, editTask);
+router.get("/tasks/:userId", verifyUser, getTasksByUserId);
 router.post("/tasks/reorder", verifyUser, reorderTasks);
 router.delete("/tasks/:taskId", verifyUser, removeTask);
 

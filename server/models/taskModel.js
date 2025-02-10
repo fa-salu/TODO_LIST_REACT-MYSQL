@@ -14,6 +14,14 @@ export const createTask = async (
   return result.insertId;
 };
 
+export const getAllTasks = async (userId) => {
+  const [result] = await pool.query("SELECT * FROM tasks WHERE user_id = ?", [
+    userId,
+  ]);
+  console.log("model", result);
+  return result;
+};
+
 export const getTasksByFolder = async (folderId, userId) => {
   const [rows] = await pool.query(
     "SELECT * FROM tasks WHERE folder_id = ? AND user_id = ? ORDER BY position ASC",
@@ -51,7 +59,8 @@ export const updateTaskOrder = async (tasks) => {
 };
 
 export const deleteTask = async (taskId) => {
-  await pool.query("DELETE FROM tasks WHERE id = ?", [taskId]);
+  const [result] = await pool.query("DELETE FROM tasks WHERE id = ?", [taskId]);
+  console.log("Delete Query Result:", result);
 };
 
 export const createFolder = async (folderName, user_id) => {

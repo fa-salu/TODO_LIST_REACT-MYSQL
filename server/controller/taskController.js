@@ -1,8 +1,10 @@
+import pool from "../config/db.js";
 import {
   createFolder,
   createTask,
   deleteFolder,
   deleteTask,
+  getAllTasks,
   getFolders,
   getTasksByFolder,
   updateTask,
@@ -29,9 +31,21 @@ export const addTask = async (req, res) => {
   }
 };
 
+export const getTasksByUserId = async (req, res) => {
+  const userId = req.user.id;
+  console.log("userid", userId);
+  try {
+    const task = await getAllTasks(userId);
+    console.log("taks", task);
+    res.status(200).json(task);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get tasks" });
+  }
+};
+
 export const getTasks = async (req, res) => {
   const { folderId } = req.params;
-  const userId = req.user.id; // Get user ID from the token
+  const userId = req.user.id;
 
   try {
     const tasks = await getTasksByFolder(folderId, userId);
@@ -44,10 +58,9 @@ export const getTasks = async (req, res) => {
 export const editTask = async (req, res) => {
   const { taskId } = req.params;
   const { title, description, deadline } = req.body;
-  const userId = req.user.id; // Extract user ID from token
+  const userId = req.user.id;
 
   try {
-    // Check if task belongs to the logged-in user
     const [task] = await pool.query("SELECT user_id FROM tasks WHERE id = ?", [
       taskId,
     ]);
@@ -58,7 +71,6 @@ export const editTask = async (req, res) => {
         .json({ error: "Not authorized to edit this task" });
     }
 
-    // Update task
     await updateTask(taskId, title, description, deadline);
 
     res.status(200).json({ message: "Task updated successfully" });
@@ -69,13 +81,11 @@ export const editTask = async (req, res) => {
 
 export const reorderTasks = async (req, res) => {
   const tasks = req.body;
-  const userId = req.user.id; // Extract user ID from token
+  const userId = req.user.id;
 
   try {
-    // Extract task IDs
     const taskIds = tasks.map((task) => task.id);
 
-    // Check if the tasks belong to the logged-in user
     const [userTasks] = await pool.query(
       "SELECT id FROM tasks WHERE id IN (?) AND user_id = ?",
       [taskIds, userId]
@@ -98,12 +108,16 @@ export const reorderTasks = async (req, res) => {
 export const removeTask = async (req, res) => {
   const { taskId } = req.params;
   const userId = req.user.id;
+  console.log("userId", userId);
+  console.log("task", taskId);
 
   try {
     const [task] = await pool.query(
       "SELECT * FROM tasks WHERE id = ? AND user_id = ?",
       [taskId, userId]
     );
+
+    console.log("Task Query Result:", task);
 
     if (task.length === 0) {
       return res
@@ -114,7 +128,11 @@ export const removeTask = async (req, res) => {
     await deleteTask(taskId);
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete task" });
+    console.error("Error deleting task:", error);
+
+    res
+      .status(500)
+      .json({ error: "Failed to delete task", details: error.message });
   }
 };
 
